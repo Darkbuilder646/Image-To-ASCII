@@ -14,7 +14,7 @@ public class Main {
         int newHeight = calculateNewHeight(image, newWidth);
 
         BufferedImage resizedImage = resizeImage(image, newWidth, newHeight);
-
+        
         // System.out.println("⣿");
 
         convertToBraille(resizedImage, 2, 4);
@@ -36,8 +36,8 @@ public class Main {
     //#endregion
 
     private static void convertToBraille(BufferedImage image, int cellWidth, int cellHeight) {
-        for (int y = 0; y < image.getHeight(); y += cellWidth) {
-            for (int x = 0; x < image.getWidth(); x += cellHeight) {
+        for (int y = 0; y < image.getHeight(); y += cellHeight) {
+            for (int x = 0; x < image.getWidth(); x += cellWidth) {
                 int gray = getAverageGrayValue(image, x, y, cellWidth, cellHeight); //For braille but also work for ASCII => (width: 2 height: 4)
 
                 char brailleChar = getAsciiChar(gray);
