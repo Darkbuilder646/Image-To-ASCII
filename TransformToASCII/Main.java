@@ -7,19 +7,21 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws IOException {
+        boolean isReverse = true;
         System.setProperty("console.encoding", "UTF-8");
 
-        BufferedImage image = loadImage("TransformToASCII\\IMG\\Flandre.jpg");
+        BufferedImage image = loadImage("TransformToASCII\\IMG\\Saturne.jpg");
         int newWidth = 250;
         int newHeight = calculateNewHeight(image, newWidth);
 
         BufferedImage resizedImage = resizeImage(image, newWidth, newHeight);
-        
+
         // System.out.println("⣿");
 
-        convertToBraille(resizedImage, 2, 4);
+        convertToBraille(resizedImage, 2, 4, isReverse);
     }
-    //#region //* Image Init
+
+    // #region //* Image Init
     private static BufferedImage loadImage(String filePath) throws IOException {
         return ImageIO.read(new File(filePath));
     }
@@ -33,15 +35,21 @@ public class Main {
         resizedImage.getGraphics().drawImage(image, 0, 0, newWidth, newHeight, null);
         return resizedImage;
     }
-    //#endregion
+    // #endregion
 
-    private static void convertToBraille(BufferedImage image, int cellWidth, int cellHeight) {
-        for (int y = 0; y < image.getHeight(); y += cellHeight) {
-            for (int x = 0; x < image.getWidth(); x += cellWidth) {
-                int gray = getAverageGrayValue(image, x, y, cellWidth, cellHeight); //For braille but also work for ASCII => (width: 2 height: 4)
+    private static void convertToBraille(BufferedImage image, int cellWidth, int cellHeight, boolean reverseGray) {
+        int imageWidth = image.getWidth();
+        int imageHeight = image.getHeight();
 
-                char brailleChar = getAsciiChar(gray);
-                System.out.print(brailleChar);
+        for (int y = 0; y < imageHeight; y += cellHeight) {
+            for (int x = 0; x < imageWidth; x += cellWidth) {
+                if (x + cellWidth <= imageWidth && y + cellHeight <= imageHeight) {
+                    int gray = getAverageGrayValue(image, x, y, cellWidth, cellHeight); // For braille but also work for
+                                                                                        // ASCII => (width: 2 height: 4)
+
+                    char brailleChar = getAsciiChar(gray, reverseGray);
+                    System.out.print(brailleChar);
+                }
             }
             System.out.println();
         }
@@ -60,19 +68,22 @@ public class Main {
     }
 
     private static int convertPixelToGray(int rgb) {
-        //? Gray Scale Formula :
+        // ? Gray Scale Formula :
         return (int) (0.21 * ((rgb >> 16) & 0xFF) + 0.72 * ((rgb >> 8) & 0xFF) + 0.07 * (rgb & 0xFF));
     }
 
-    private static char getAsciiChar(int gray) {
-        // Gray Scale table for Braille symbol
-        // String listChars = "⠁⠂⠃⠄⠅⠆⠇⠈⠉⠊⠋⠌⠍⠎⠏⠐⠑⠒⠓⠔⠕⠖⠗⠘⠙⠚⠛⠜⠝⠞⠟⠠⠡⠢⠣⠤⠥⠦⠧⠨⠩⠪⠫⠬⠭⠮⠯⠰⠱⠲⠳⠴⠵⠶⠷⠸⠹⠺⠻⠼⠽⠾⠿";
-        String listChars = "@%#*+=-:. ";
-
+    private static char getAsciiChar(int gray, boolean reverseGray) {
+        String listChars = "";
+        if(reverseGray) {
+            listChars = " .:-=+*#%@";
+        } else {
+            listChars = "@%#*+=-:. ";
+        }
+        
         // Normalise Gray scale
         int index = gray * (listChars.length() - 1) / 255;
 
         return listChars.charAt(index);
     }
-    
+
 }
