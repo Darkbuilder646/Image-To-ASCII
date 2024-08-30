@@ -1,36 +1,41 @@
 package com.transformtoascii;
 
-import com.transformtoascii.config.LoggerConfig;
+import com.transformtoascii.config.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 
 public class App {
     private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
 
     public static void main( String[] args )
     {
-        LoggerConfig loggerConfig = new LoggerConfig();
-        loggerConfig.basicConfiguration();
+        //Basic config
+        AppConfig appConfig = new AppConfig();
+        appConfig.basicConfiguration();
+        boolean isReverse = Boolean.parseBoolean(appConfig.getProperty("app.image.reverseGrayscale"));
+        boolean graphiqueInterface = Boolean.parseBoolean(appConfig.getProperty("app.useInterface"));
 
-        LOGGER.info("App is starting");
+        LOGGER.info("App is starting...");
 
-        boolean isReverse = false;
-        System.setProperty("console.encoding", "UTF-8");
+        if (graphiqueInterface) {
+            InterfaceSwing interfaceSwing = new InterfaceSwing();
+            interfaceSwing.showInterface();
 
-        ImageProcessor imageProcessor = new ImageProcessor("src/main/resources/img/Saturne.jpg");
-        if (imageProcessor.getImage() != null) {
-            double scaleFactor = 0.25;
+        } else {
+            System.setProperty("console.encoding", "UTF-8");
 
-            BufferedImage resezedImage = imageProcessor.resizeImageWithFactor(imageProcessor.getImage(), scaleFactor);
+            ImageProcessor imageProcessor = new ImageProcessor(appConfig.getProperty("app.image.default"));
+            if (imageProcessor.getImage() != null) {
+                double scaleFactor = 0.25;
 
-            AsciiConverter converter = new AsciiConverter();
-            converter.convertToAscii(resezedImage, 2, 4, isReverse);
+                BufferedImage resezedImage = imageProcessor.resizeImageWithFactor(imageProcessor.getImage(), scaleFactor);
 
+                AsciiConverter converter = new AsciiConverter();
+                converter.convertToAscii(resezedImage, 2, 4, isReverse);
+
+            }
         }
 
     }

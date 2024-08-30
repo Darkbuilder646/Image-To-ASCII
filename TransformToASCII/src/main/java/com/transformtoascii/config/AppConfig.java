@@ -8,11 +8,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class LoggerConfig {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LoggerConfig.class);
+public class AppConfig {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AppConfig.class);
+    private Properties properties;
 
     public void basicConfiguration() {
-        Properties properties = new Properties();
+        properties = new Properties();
 
         try (InputStream input = App.class.getClassLoader().getResourceAsStream("application.properties")) {
             if (input == null) {
@@ -21,8 +22,8 @@ public class LoggerConfig {
             }
 
             properties.load(input);
-            final String appName = properties.getProperty("app.name");
-            final String appVersion = properties.getProperty("app.version");
+            final String appName = this.getProperty("app.name");
+            final String appVersion = this.getProperty("app.version");
 
             LOGGER.info("App name : {}", appName);
             LOGGER.info("App version : {}", appVersion);
@@ -30,6 +31,11 @@ public class LoggerConfig {
         } catch (IOException ex) {
             LOGGER.error("an error has occured", ex);
         }
+
+    }
+
+    public String getProperty(String key) {
+        return properties.getProperty(key);
     }
 
 }
