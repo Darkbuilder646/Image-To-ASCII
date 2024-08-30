@@ -1,8 +1,10 @@
 package com.transformtoascii;
 
+import com.transformtoascii.config.LoggerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -12,34 +14,24 @@ public class App {
 
     public static void main( String[] args )
     {
-        Properties properties = new Properties();
+        LoggerConfig loggerConfig = new LoggerConfig();
+        loggerConfig.basicConfiguration();
 
-        try (InputStream input = App.class.getClassLoader().getResourceAsStream("application.properties")) {
-            if (input == null) {
-                LOGGER.error("File application.properties not found");
-                return;
-            }
+        LOGGER.info("App is starting");
 
-            properties.load(input);
-            final String appName = properties.getProperty("app.name");
-            final String appVersion = properties.getProperty("app.version");
+        boolean isReverse = false;
+        System.setProperty("console.encoding", "UTF-8");
 
-            LOGGER.info("App name : {}", appName);
-            LOGGER.info("App version : {}", appVersion);
+        ImageProcessor imageProcessor = new ImageProcessor("src/main/resources/img/Saturne.jpg");
+        if (imageProcessor.getImage() != null) {
+            double scaleFactor = 0.25;
 
+            BufferedImage resezedImage = imageProcessor.resizeImageWithFactor(imageProcessor.getImage(), scaleFactor);
 
-        } catch (IOException ex) {
-            LOGGER.error("an error has occured", ex);
+            AsciiConverter converter = new AsciiConverter();
+            converter.convertToAscii(resezedImage, 2, 4, isReverse);
+
         }
-
-        LOGGER.debug("Logger configured by application.properties");
-        LOGGER.debug("Starting app");
-        LOGGER.warn("Waring message 1");
-        LOGGER.debug("hello world 1");
-        LOGGER.debug("hello world 2");
-        LOGGER.info("hello world 3");
-        LOGGER.warn("Waring message 2");
-        LOGGER.error("Error message here");
 
     }
 }
