@@ -33,7 +33,8 @@ public class App {
                 BufferedImage resezedImage = imageProcessor.resizeImageWithFactor(imageProcessor.getImage(), scaleFactor);
 
                 AsciiConverter converter = new AsciiConverter();
-                converter.convertToAscii(resezedImage, 2, 4, isReverse);
+                String asciiArt = converter.convertToAscii(resezedImage, 2, 4, isReverse);
+                LOGGER.debug("ASCII Art of image load : {}", asciiArt);
 
             }
         }

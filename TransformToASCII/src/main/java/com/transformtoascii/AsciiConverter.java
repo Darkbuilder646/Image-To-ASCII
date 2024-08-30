@@ -6,23 +6,25 @@ import org.slf4j.LoggerFactory;
 import java.awt.image.BufferedImage;
 
 public class AsciiConverter {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AsciiConverter.class);
 
-    public void convertToAscii(BufferedImage image, int cellWidth, int cellHeight, boolean reverseGray) {
+    public String convertToAscii(BufferedImage image, int cellWidth, int cellHeight, boolean reverseGray) {
         int imageWidth = image.getWidth();
         int imageHeight = image.getHeight();
+        StringBuilder asciiArt = new StringBuilder();
 
         for (int y = 0; y < imageHeight; y += cellHeight) {
             for (int x = 0; x < imageWidth; x += cellWidth) {
                 if (x + cellWidth <= imageWidth && y + cellHeight <= imageHeight) {
                     int gray = getAverageGrayValue(image, x, y, cellWidth, cellHeight);
 
-                    char brailleChar = getAsciiChar(gray, reverseGray);
-                    System.out.print(brailleChar);
+                    char asciiChar = getAsciiChar(gray, reverseGray);
+                    asciiArt.append(asciiChar);
                 }
             }
-            System.out.println();
+            asciiArt.append('\n');
         }
+
+        return asciiArt.toString();
     }
 
     private int getAverageGrayValue(BufferedImage image, int startX, int startY, int width, int height) {

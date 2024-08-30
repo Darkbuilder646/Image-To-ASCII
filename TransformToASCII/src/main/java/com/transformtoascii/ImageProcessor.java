@@ -25,7 +25,6 @@ public class ImageProcessor {
         File file = new File(filePath);
         try {
             if (file.exists()) {
-                LOGGER.info("File loading");
                 return ImageIO.read(file);
             } else {
                 LOGGER.warn("File not found");
@@ -41,7 +40,7 @@ public class ImageProcessor {
         int newWidth = (int) (image.getWidth() * factor);
         int newHeight = (int) (image.getHeight() * factor);
 
-        LOGGER.info("New dimension of image : {}w {}h", newWidth, newHeight);
+        //LOGGER.debug("New dimension of image : {}w {}h", newWidth, newHeight);
 
         BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = resizedImage.createGraphics();
